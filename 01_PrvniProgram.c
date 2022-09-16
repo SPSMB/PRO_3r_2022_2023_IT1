@@ -3,6 +3,8 @@
 // test 03
 // test 04
 int main(void){
+	printf("Honzik was here\n");
+
 	printf("Toto je muj prvni program.\n");
 
 	int rychlost; 	// deklarace
