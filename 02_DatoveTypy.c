@@ -28,6 +28,8 @@ int main(void){
 	unsigned int k1 = 3254927976;
 	int k2 = (int) k1;
 	printf("%d", k2);
+	
+	// ZMENA 2
 
 
 	return 0;
