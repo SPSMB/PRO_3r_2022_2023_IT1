@@ -30,6 +30,7 @@ int main(void){
 	printf("%d", k2);
 	
 	// ZMENA 2
+	// ZMENA 3
 
 
 	return 0;
