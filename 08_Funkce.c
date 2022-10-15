@@ -22,12 +22,17 @@ void nasob3(int * a, int *b, int * vysledek){
 int main(void){
 
 	int vysledek;
-	int a = 51234;
-	printf("Adresa uvnitr funkce main a: %p\n", &a);
-	int b = 91234;
-	nasob3(&a, &b, &vysledek);
-	printf("vysledek: %d\n", vysledek);
-	printf("A ve funkci main: %d", a);
+
+	double a = 3.15;
+	double b = 7.99;
+	nasob2(a,b);
+
+	// int a = 51234;
+	// printf("Adresa uvnitr funkce main a: %p\n", &a);
+	// int b = 91234;
+	// nasob3(&a, &b, &vysledek);
+	// printf("vysledek: %d\n", vysledek);
+	// printf("A ve funkci main: %d", a);
 	/*vysledek = nasob(a,b);*/
 	//printf("vysledek: %f\n", nasob(a,b));
 	//nasob2(a,b);
