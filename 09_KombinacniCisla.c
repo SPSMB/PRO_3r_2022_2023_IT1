@@ -3,6 +3,11 @@
 // 7.10.2022
 // Tomas Zimmerhakl
 
+// nasledujici radek potlaci pri kompilovani warning C4996: 
+//   'scanf': This function or variable may be unsafe.
+#pragma warning(disable:4996)
+
+
 #include <stdio.h>
 
 int faktorial(int x){

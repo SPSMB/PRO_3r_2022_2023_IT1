@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// nasledujici radek potlaci pri kompilovani warning C4996: 
+//   'scanf': This function or variable may be unsafe.
+#pragma warning(disable:4996)
+
 int main(void){
 	/*
 	int i = 14;
