@@ -5,42 +5,53 @@
 //   'strncpy': This function or variable may be unsafe.
 #pragma warning(disable:4996)
 
-void pridejCisla(int ** poleCisel, int * velPole){
+void pridejCisla(int ** poleCisel, int * vyuzito, int * kapacita){
 
 	int novyPocet = 0;
 	printf("Kolik novych cisel? ");
 	scanf("%d", &novyPocet);
 
-	int novaVel = *velPole + novyPocet; // nova velikost pole
+	// inteligentni vypocet
+	int noveVyuzito = *vyuzito + novyPocet; // novy pocet prvku v poli
 
-	printf("Alokuji nove pole o delce %d.\n", novaVel);
+	if( noveVyuzito > *kapacita){
+		// musim alokovat nebo realokovat
+		int novaKapacita = noveVyuzito * 3;
+		printf("Alokuji nove pole o delce %d.\n", novaKapacita);
+		
+		int * novePole;
+		if(*kapacita == 0){
+			novePole = (int *) malloc(novaKapacita * sizeof(int));
+		} else {
+			novePole = (int *) realloc(*poleCisel, novaKapacita * sizeof(int));
+		}
+		*poleCisel = novePole;
+		*kapacita = novaKapacita;
 
-	int * novePole;
-	if(*velPole == 0){
-		novePole = (int *) malloc(novaVel * sizeof(int));
 	} else {
-		novePole = (int *) realloc(*poleCisel, novaVel * sizeof(int));
+		// nemusim alokovat
+		printf("Potrebuji ulozit %d prvku, kapacita je %d.\n", noveVyuzito, *kapacita);
 	}
 
-	if(novePole != NULL){
+
+	if(poleCisel != NULL){
 		printf("Prosim zadejte jednotliva cisla oddelena mezerami:\n");
-		*poleCisel = novePole;
-		for(int i = *velPole; i < novaVel; i++){
-			scanf("%d", &(novePole[i]));
+		int * pole = *poleCisel;
+		for(int i = *vyuzito; i < noveVyuzito; i++){
+			scanf("%d", &(pole[i]));
 		}
-		*velPole = novaVel;
 	} else {
 		printf("Alokace selhala.\n");
 		free(*poleCisel);
 	}
-
+	*vyuzito = noveVyuzito;
 }
 
-void vypisPole(int * pole, int vel){
-	if(vel == 0){
+void vypisPole(int * pole, int vyuzito){
+	if(vyuzito == 0){
 		printf("Pole je prazdne.\n");
 	} else {
-		for(int i = 0; i < vel; i++){
+		for(int i = 0; i < vyuzito; i++){
 			printf("%d ", pole[i]);
 		}
 		printf("\n");
@@ -54,7 +65,8 @@ void hledejCislo(int * pole, int vel){
 int main(void){
 	
 	int * poleCisel = NULL;
-	int velPole = 0;
+	int kapacita = 0;
+	int vyuzito = 0;
 	char volba;
 
 	while(1){
@@ -62,11 +74,11 @@ int main(void){
 		scanf("%c", &volba);
 
 		if(volba == 'P'){
-			pridejCisla(&poleCisel, &velPole);
+			pridejCisla(&poleCisel, &vyuzito, &kapacita);
 		} else if(volba == 'H'){
-			hledejCislo(poleCisel, velPole);
+			hledejCislo(poleCisel, vyuzito);
 		} else if(volba == 'V'){
-			vypisPole(poleCisel, velPole);
+			vypisPole(poleCisel, vyuzito);
 		} else if(volba == 'K'){
 			break;
 		} else {
