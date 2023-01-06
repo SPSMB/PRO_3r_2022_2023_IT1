@@ -58,8 +58,40 @@ void vypisPole(int * pole, int vyuzito){
 	}
 }
 
+/* funkce hleda cislo v poli "pole"
+	pole - ukazatel na pole, kde budeme hledat
+	vel - velikost pole, kde budeme vyhledavat
+
+	cislo, ktere hledame, zjistime pres scanf az ve funkci
+*/
 void hledejCislo(int * pole, int vel){
 
+	int h;
+	printf("Prosim zadejte hledane cislo: ");
+	scanf("%d", &h);
+
+	int pocet = 0;
+	for(int i=0; i < vel; i++){
+		if(pole[i] == h){
+			pocet++;
+		}
+	}
+	printf("Hledane cislo %d se v poli nachazi %dx.\n", h, pocet);
+}
+
+/* odebere prvek v poli, ktery zada uzivatel indexem 
+	index zada uzivatel az ve funkci
+*/
+void odeber(int * pole, int * vyuzito){
+
+	int index;
+	printf("Prosim zadejte index, ze ktereho budeme odebirat: ");
+	scanf("%d", &index);
+
+	for(int j=index; j<*vyuzito; j++){
+		pole[j] = pole[j+1];
+	}
+	(*vyuzito)--;
 }
 
 int main(void){
@@ -70,7 +102,7 @@ int main(void){
 	char volba;
 
 	while(1){
-		printf("Zadej P (Pridej) H (Hledej) V (Vypis) K (Konec): ");
+		printf("Zadej P (Pridej) H (Hledej) V (Vypis) O (odeber) K (Konec): ");
 		scanf("%c", &volba);
 
 		if(volba == 'P'){
@@ -79,6 +111,8 @@ int main(void){
 			hledejCislo(poleCisel, vyuzito);
 		} else if(volba == 'V'){
 			vypisPole(poleCisel, vyuzito);
+		} else if(volba == 'O'){
+			odeber(poleCisel, &vyuzito);
 		} else if(volba == 'K'){
 			break;
 		} else {
