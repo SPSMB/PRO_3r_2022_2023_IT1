@@ -99,10 +99,10 @@ void zpracujRadek(char * radek, int r, int * hodnota, int * rok, int * tyden,
 		"0-14",
 	*/
 
-	int i = 0; 		/* index do pole radek */
-	int s = 1; 		/* cislo sloupce */
-	int t = 0; 		/* index do pole tmp */
-	char tmp[20]; 	/* prostor pro uzitecny obsah */
+	int i = 0; 				/* index do pole radek */
+	int s = 1; 				/* cislo sloupce */
+	int t = 0; 				/* index do pole tmp */
+	char tmp[DELKARETEZCE]; /* prostor pro uzitecny obsah */
 	
 	// ctu radek po 1 znaku od zacatku do konce
 	while(radek[i] != '\n'){
@@ -110,9 +110,12 @@ void zpracujRadek(char * radek, int r, int * hodnota, int * rok, int * tyden,
 			tmp[t]='\0';
 			t=0;
 			// ukladam obsah tmp do velkeho pole
-			if(s == 13){
-				strncpy(vek_txt[r],tmp,20);
-			}
+			if(s == 2) hodnota[r] = atoi(tmp);
+			if(s == 8) rok[r] = atoi(tmp);
+			if(s == 9) tyden[r] = atoi(tmp);
+			if(s == 11) strncpy(cas_od[r],  tmp, DELKARETEZCE);
+			if(s == 12) strncpy(cas_do[r],  tmp, DELKARETEZCE);
+			if(s == 13) strncpy(vek_txt[r], tmp, DELKARETEZCE);
 			s++;
 		} else if(radek[i] == '"'){
 			i++;
