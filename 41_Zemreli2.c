@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DELKARETEZCE 15
+#define DELKARETEZCE 20
 #define DELKA 200
 
 #pragma warning(disable:4996)
@@ -112,8 +112,44 @@ void zpracujRadek(char * radek, int r, Zaznam * databaze){
 	}
 }
 
+void vypisFiltr(Zaznam * db, int vel, int * nalezy, int pocetNalezu){
+	
+	if(pocetNalezu != 0){
+		printf("--------------------------------------------------------\n");
+		printf("ID   |ROK  |TYDEN|HODN.|KATEGORIE|OD        |DO        |\n");
+		for(int i=0; i<vel; i++){
+			if(nalezy[i] == 1){
+				printf("%5d|%5d|%5d|%5d|%9s|%10s|%10s|\n",i,db[i].rok, db[i].tyden, 
+						db[i].hodnota,db[i].vek_txt, db[i].cas_od, db[i].cas_do);
 
-void obsluhaUzivatele(){
+			}
+		}
+		printf("--------------------------------------------------------\n\n");
+	}
+	printf("Filtru odpovídá %d záznamů.\n", pocetNalezu);
+}
+
+/* Filtr vypisuje jen zaznamy pro urcitou kategorii (kat) mezi urcitymi datumy (dat1 - dat2)  
+*/
+void filtr(Zaznam * db, int vel, char * kat, char * dat1, char * dat2){
+	int pocet=0;
+
+	int * nalezy = (int*) calloc(vel, sizeof(int));
+	for(int i=0; i<vel; i++){
+		/*if(strcmp(db[i].vek_txt,kat) == 0){*/ /* toto bz bzlo skvele, kdyby tam nebyla kategorie 85+*/
+		if((strcmp(db[i].cas_od,dat2) <= 0) && 
+		   (strcmp(db[i].cas_do,dat1) >= 0) && 
+		   (db[i].vek_txt[0] == kat[0])		&& 
+		   (db[i].vek_txt[1] == kat[1])){
+			nalezy[i] = 1;
+			pocet++;
+		}		
+	}
+	vypisFiltr(db, vel, nalezy, pocet);
+	free(nalezy);
+}
+
+void obsluhaUzivatele(Zaznam * db, int velDB){
 
 	char vstup = 'X';
 	while(1){
@@ -123,6 +159,13 @@ void obsluhaUzivatele(){
 
 		scanf("%c", &vstup);
 		if(vstup == 'F'){
+			char kategorie[DELKARETEZCE];
+			char datum1[DELKARETEZCE];
+			char datum2[DELKARETEZCE];
+			scanf("%s %s %s", kategorie, datum1, datum2);
+			printf("Filtruji data v kategorii %s od data %s do data %s.\n",
+				kategorie, datum1, datum2);
+			filtr(db, velDB, kategorie, datum1, datum2);
 
 		} else if(vstup == 'K') {
 			break;
@@ -155,7 +198,7 @@ int main(int argc, char ** argv){
 		}
 	}
 	
-	obsluhaUzivatele();
+	obsluhaUzivatele(databaze, pocatecniKapacita);
 
 	uvolniPamet(&databaze, pocatecniKapacita);
 	printf("Uvolneni pameti uspesne.\n");
