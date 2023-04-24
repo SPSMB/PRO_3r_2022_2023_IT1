@@ -114,11 +114,15 @@ void zpracujRadek(char * radek, int r, Zaznam * databaze){
 
 void vypisFiltr(Zaznam * db, int vel, int * nalezy, int pocetNalezu){
 	
+	int nalez = 0;
 	if(pocetNalezu != 0){
 		printf("--------------------------------------------------------\n");
-		printf("ID   |ROK  |TYDEN|HODN.|KATEGORIE|OD        |DO        |\n");
+		
 		for(int i=0; i<vel; i++){
+
 			if(nalezy[i] == 1){
+				if (nalez%15 == 0) printf("ID   |ROK  |TYDEN|HODN.|KATEGORIE|OD        |DO        |\n");
+				nalez++;
 				printf("%5d|%5d|%5d|%5d|%9s|%10s|%10s|\n",i,db[i].rok, db[i].tyden, 
 						db[i].hodnota,db[i].vek_txt, db[i].cas_od, db[i].cas_do);
 
@@ -130,9 +134,13 @@ void vypisFiltr(Zaznam * db, int vel, int * nalezy, int pocetNalezu){
 }
 
 /* Filtr vypisuje jen zaznamy pro urcitou kategorii (kat) mezi urcitymi datumy (dat1 - dat2)  
+   vypis - kdyz je 0, nevypisuje nic
+   vystup - 's' - vraci soucet z filtrovaych hodnot
+   	 		'p' - vraci prumer z filtrovanych hodnot
 */
-void filtr(Zaznam * db, int vel, char * kat, char * dat1, char * dat2){
-	int pocet=0;
+int filtr(Zaznam * db, int vel, char * kat, char * dat1, char * dat2, int vypis, char vystup){
+	int pocet = 0;
+	int soucet = 0;
 
 	int * nalezy = (int*) calloc(vel, sizeof(int));
 	for(int i=0; i<vel; i++){
@@ -142,11 +150,21 @@ void filtr(Zaznam * db, int vel, char * kat, char * dat1, char * dat2){
 		   (db[i].vek_txt[0] == kat[0])		&& 
 		   (db[i].vek_txt[1] == kat[1])){
 			nalezy[i] = 1;
+			soucet += db[i].hodnota;
 			pocet++;
 		}		
 	}
-	vypisFiltr(db, vel, nalezy, pocet);
+	
+	if(vypis != 0){
+		vypisFiltr(db, vel, nalezy, pocet);
+	}
+	
 	free(nalezy);
+	if(vystup == 's'){
+		return soucet;
+	} else {
+		return soucet/pocet;
+	}
 }
 
 void obsluhaUzivatele(Zaznam * db, int velDB){
@@ -159,14 +177,15 @@ void obsluhaUzivatele(Zaznam * db, int velDB){
 
 		scanf("%c", &vstup);
 		if(vstup == 'F'){
+			char vystupTyp;
 			char kategorie[DELKARETEZCE];
 			char datum1[DELKARETEZCE];
 			char datum2[DELKARETEZCE];
-			scanf("%s %s %s", kategorie, datum1, datum2);
+			scanf("%s %s %s %c", kategorie, datum1, datum2, &vystupTyp);
 			printf("Filtruji data v kategorii %s od data %s do data %s.\n",
 				kategorie, datum1, datum2);
-			filtr(db, velDB, kategorie, datum1, datum2);
-
+			int vystup = filtr(db, velDB, kategorie, datum1, datum2, 1, vystupTyp);
+			printf("Vracena hodnota typu %c :%d\n", vystupTyp, vystup );
 		} else if(vstup == 'K') {
 			break;
 		} else {
@@ -178,6 +197,7 @@ void obsluhaUzivatele(Zaznam * db, int velDB){
 
 int main(int argc, char ** argv){
 
+	system("chcp 65001");
 	const char * nazevSouboru = "40_zemreli.csv";
 	int pocatecniKapacita = pocetRadku(nazevSouboru);
 
