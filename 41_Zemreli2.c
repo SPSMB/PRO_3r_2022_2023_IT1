@@ -128,7 +128,7 @@ void vypisFiltr(Zaznam * db, int vel, int * nalezy, int pocetNalezu){
 
 			}
 		}
-		printf("--------------------------------------------------------\n\n");
+		printf("--------------------------------------------------------\nK");
 	}
 	printf("Filtru odpovídá %d záznamů.\n", pocetNalezu);
 }
@@ -162,30 +162,99 @@ int filtr(Zaznam * db, int vel, char * kat, char * dat1, char * dat2, int vypis,
 	free(nalezy);
 	if(vystup == 's'){
 		return soucet;
-	} else {
+	} else if(pocet != 0) {
 		return soucet/pocet;
+	} else {
+		return -1;
 	}
+}
+
+int pocetDnuOdPocatku(int rok1, int mesic1, int den1){
+	return 0;
+}
+
+double pocetLetMeziDatumy(char * datum1, char * datum2){
+
+	int rok1, mesic1, den1;
+	int rok2, mesic2, den2;
+
+	sscanf(datum1,"%d-%d-%d", &rok1, &mesic1, &den1);
+	sscanf(datum2,"%d-%d-%d", &rok2, &mesic2, &den2);
+
+	// printf("Test: rok: %d, mesic: %d, den %d", rok1, mesic1, den1);
+
+	int celkovyPocet1 = pocetDnuOdPocatku(rok1, mesic1, den1);
+	int celkovyPocet2 = pocetDnuOdPocatku(rok2, mesic2, den2);
+
+	int rozdilVeDnech = celkovyPocet2 - celkovyPocet1;
+	return (double)rozdilVeDnech/365;
+}
+
+void analyzaCovidu1(Zaznam * db, int velDB){
+
+	printf("Analyza covidu 1\n");
+	char kategorie[DELKARETEZCE] = "celkem";
+	char datum1[DELKARETEZCE] = "2011-01-01";
+	char datum2[DELKARETEZCE] = "2019-12-31";	
+	char datum3[DELKARETEZCE] = "2020-01-01";
+	char datum4[DELKARETEZCE] = "2021-12-31";
+	char datum5[DELKARETEZCE] = "2022-12-31";
+
+	int soucetZa9let = filtr(db, velDB, kategorie, datum1, datum2, 0, 's');
+	int rocniPrumerBezCovidu = soucetZa9let / 9;
+	printf("Krok cislo 1b: Rocni prumer za roky 2011-2019 je %d.\n", rocniPrumerBezCovidu);
+
+	int soucetza2roky = filtr(db, velDB, kategorie, datum3, datum4, 0, 's');
+	int soucetza3roky = filtr(db, velDB, kategorie, datum3, datum5, 0, 's');
+	printf("Krok cislo 2a: Rocni prumer za roky 2020-2021 je %d.\n", soucetza2roky/2);
+	printf("Krok cislo 2b: Rocni prumer za roky 2020-2022 je %d.\n", soucetza3roky/3);
+
+	printf("Tedy v dobe covidu (2020-2022) zemrelo o %d vice lidi nez je bezne.\n", 
+		soucetza3roky - (rocniPrumerBezCovidu*3));
+
 }
 
 void obsluhaUzivatele(Zaznam * db, int velDB){
 
 	char vstup = 'X';
 	while(1){
-		printf("Zadejte:\n");
+		printf("\nZadejte:\n");
 		printf(" F <kategorie> <od> <do>: Filtr zemrelych v kategorii od do.\n");
+		printf(" S <kategorie> <od> <do>: Soucet zemrelych v kategorii od do.\n");
+		printf(" P <kategorie> <od> <do>: Prumer zemrelych v kategorii od do.\n");
+		printf(" A:                       Analyza covidu\n");
+		printf(" D <od> <do>:             Pocet let mezi datumy od od\n");
 		printf(" K:                       Konec programu.\n");
 
 		scanf("%c", &vstup);
+		char kategorie[DELKARETEZCE];
+		char datum1[DELKARETEZCE];
+		char datum2[DELKARETEZCE];
 		if(vstup == 'F'){
-			char vystupTyp;
-			char kategorie[DELKARETEZCE];
-			char datum1[DELKARETEZCE];
-			char datum2[DELKARETEZCE];
-			scanf("%s %s %s %c", kategorie, datum1, datum2, &vystupTyp);
+			scanf("%s %s %s", kategorie, datum1, datum2);
 			printf("Filtruji data v kategorii %s od data %s do data %s.\n",
 				kategorie, datum1, datum2);
-			int vystup = filtr(db, velDB, kategorie, datum1, datum2, 1, vystupTyp);
-			printf("Vracena hodnota typu %c :%d\n", vystupTyp, vystup );
+			int vystup = filtr(db, velDB, kategorie, datum1, datum2, 1, 's');
+		} else if(vstup == 'S'){
+			scanf("%s %s %s", kategorie, datum1, datum2);
+			int soucet = filtr(db, velDB, kategorie, datum1, datum2, 0, 's');
+			printf("Soucet zemrelych osob v kategorii %s od data %s do data %s je %d.\n", 
+				kategorie, datum1, datum2, soucet);
+		} else if(vstup == 'P'){
+			scanf("%s %s %s", kategorie, datum1, datum2);
+			int prumer = filtr(db, velDB, kategorie, datum1, datum2, 0, 'p');
+			if(prumer == -1){
+				printf("Nema smysl pocitat prumer z 0 hodnot.\n");
+			} else {
+				printf("Prumer zemrelych osob v kategorii %s od data %s do data %s je %d.\n", 
+					kategorie, datum1, datum2, prumer);
+			}
+		} else if(vstup == 'A'){
+			analyzaCovidu1(db, velDB);
+		} else if(vstup == 'D') {
+			scanf("%s %s", datum1, datum2);
+			double pocet = pocetLetMeziDatumy(datum1, datum2);
+			printf("Pocet let mezi %s a %s je %.2f", datum1, datum2, pocet);
 		} else if(vstup == 'K') {
 			break;
 		} else {
