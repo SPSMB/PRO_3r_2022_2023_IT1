@@ -59,8 +59,8 @@ int main(void){
 	// Vstup od uzivatele
 
 	int x;
-	double y;
-	int auto;
+	double y; 
+	int _auto;
 	char retezec[100];
 	char znak;
 	
@@ -93,6 +93,10 @@ int main(void){
 	cout << "Y: " << y << endl;
 	cout << "Znak: >" << znak << "<" << endl;
 	cout << "Retezec: >" << retezec << "<" << endl;
+
+
+	cout << "X + showpos  : " << showpos << x << endl;
+	cout << "X + noshowpos: " << noshowpos << x << endl;
 
 	return 0;
 }
